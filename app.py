@@ -1,17 +1,26 @@
-from flask import Flask
+from flask import Flask, request, jsonify
+from models.task import Task
 
 #cria aplicação Flask
 app = Flask(__name__)
 
-#criar rota para comunicar com outros clientes = receber e devolver
-@app.route("/") #define a rota - @app.route("/") = rota padrão
-def hello_word():
-    return "Hello Word!"
+#Armazena as tarefas na lista tasks = []
+tasks = []
 
-#criar outra rota retornando outras informações
-@app.route("/about")
-def about():
-    return "Página sobre"
+#Variavel para iniciar a tarefa com id 1
+task_id_control = 1
+
+# riação da rota task com o metodo POST
+# Metodo para criar as tarefas (creat_task())
+@app.route('/tasks', methods=['POST'])
+def creat_task():
+    global task_id_control
+    data = request.get_json()
+    new_task = Task(id=task_id_control, title=data['title'], description=data.get("description", ""))
+    task_id_control += 1
+    tasks.append(new_task)
+    return jsonify({"message": "Nova tarefa criada com sucesso"})
+
 
 #modo de execução de desenvolvimento local
 if __name__ == "__main__":
